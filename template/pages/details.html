@@ -1,8 +1,32 @@
 {{define "title"}}
-{{.Name}}
+{{.Artists.Name}}
 {{end}}
 
 {{define "content"}}
-    <img src="{{.Image}}" alt="">
-    <h3>{{.Name}}</h3>
+    <img src="{{.Artists.Image}}" alt="">
+    <h3>{{.Artists.Name}}</h3>
+    <div class="">{{.Locations.Dates}}</div>
+    {{$display := ""}}
+    <ul>
+        {{range $in,$date := .Dates.Date}}
+        {{if eq $in 0}}
+        {{$display = $date}}
+        {{end}}
+            <li>{{$date}}</li>
+        {{end}}
+    </ul>
+    <ol>
+        {{range $key, $value := .Relations.DatesLocations}}
+            <li><b>{{$key}}</b>: 
+                <ul>
+                    {{range $item := $value}}
+                        <li>{{$item}}</li>
+                    {{end}}
+                </ul>
+            </li>
+        {{end}}
+    </ol>
+
+    <h1>{{$display}}</h1>
+    <a href="/">BACK TO HOME PAGE!</a>
 {{end}}

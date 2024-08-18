@@ -4,8 +4,10 @@
 <h1>Home Page</h1>
 <main class="">
     {{range $key,$artist := .}}
-        <img src="{{$artist.Image}}" alt="" class="">
-        <h3 class="">{{$artist.Name}}</h3>
+        <a href="/artists/{{$artist.Id}}">
+            <img src="{{$artist.Image}}" alt="" class="">
+            <h3 class="">{{$artist.Name}}</h3>
+        </a>
     {{end}}
 </main>
 {{end}}
