@@ -5,7 +5,6 @@
 {{define "content"}}
     <img src="{{.Artists.Image}}" alt="">
     <h3>{{.Artists.Name}}</h3>
-    <div class="">{{.Locations.Dates}}</div>
     {{$display := ""}}
     <ul>
         {{range $in,$date := .Dates.Date}}
