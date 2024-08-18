@@ -1,0 +1,11 @@
+{{define "title"}}Home Page{{end}}
+
+{{define "content"}}
+<h1>Home Page</h1>
+<main class="">
+    {{range $key,$artist := .}}
+        <img src="{{$artist.Image}}" alt="" class="">
+        <h3 class="">{{$artist.Name}}</h3>
+    {{end}}
+</main>
+{{end}}
