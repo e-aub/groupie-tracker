@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"sync"
 	"groupie_tracker/global"
 )
 
@@ -15,7 +14,7 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 		Dates     global.ArtistDate
 		Relations global.ArtistRelation
 	}
-	var wg sync.WaitGroup
+	var wg global.CheckWG
 	// handle url
 	url_path := strings.Split(r.URL.Path, "/")
 	id := url_path[2]
@@ -30,7 +29,7 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	dates_url := "/dates/" + id
 	relations_url := "/relation/" + id
 	// get data from api
-	wg.Add(4)
+	wg.WG.Add(4)
 	go global.Read(w, r, artist_url, &context.Artists,&wg)
 	go global.Read(w, r, locations_url, &context.Locations,&wg)
 	go global.Read(w, r, dates_url, &context.Dates,&wg)
@@ -38,6 +37,6 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	pages := []string{
 		"template/pages/details.html",
 	}
-	wg.Wait()
+	wg.WG.Wait()
 	global.ExecuteTemplate(w, r, pages, context)
 }

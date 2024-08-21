@@ -1,4 +1,55 @@
-body {
-    background-color: black;
-    color: aliceblue;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+:root {
+    /* dark colors */
+    --dark-1: #000000;
+    --dark-2: #1F1F1F;
+    --dark-3: #2A2A2A;
+    /* light colors */
+    --light-1: #FFFFFF;
+    --light-2: #D9D9D9;
+    /* green color */
+    --primary: #3BE477;
+    /* green color */
+    --primary-1: #00D236;
+    --primary-2: #00DC53;
+    --primary-3: #3BE477;
+    --primary-4: #87ECA0;
+    --primary-5: #BAF3C6;
+    --primary-6: #E2FBE8;
+    --roboto: "Roboto", sans-serif;
+    font-size: 10px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body.light {
+    background-color: var(--light-1);
+    color: var(--dark-2);
+}
+
+body.dark {
+    background-color: var(--dark-1);
+    color: var(--light-2);
+}
+
+.navigation {
+    background-color: var(--dark-2);
+    position: relative;
+    width: 100%;
+    height: max-content;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5em 10em;
+    margin-bottom: 3em;
+    box-shadow: 0 0 .4em var(--dark-3);
+}
+
+.logo {
+    height: 5em;
 }

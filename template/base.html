@@ -1,16 +1,37 @@
 {{define "base"}}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/static/style.css" />
-    
+
     <title>{{template "title" .}}</title>
 </head>
-<body>
-    <!-- <h1>Navbar</h1> -->
+
+<body id="content" class="dark">
+    {{block "navigation" .}}{{end}}
     {{template "content" .}}
+    <script>
+        var content = document.getElementById("content")
+        var mode = localStorage.getItem("mode")
+        var dark = true
+        mode ? content.classList = mode : ""
+        mode === "dark" ? dark = true : dark = false
+        const changeMode = () => {
+            if (dark) {
+                dark = false
+                content.classList = "light"
+                localStorage.setItem("mode", "light")
+            } else {
+                dark = true
+                content.classList = "dark"
+                localStorage.setItem("mode", "dark")
+            }
+        }
+    </script>
 </body>
+
 </html>
 {{end}}

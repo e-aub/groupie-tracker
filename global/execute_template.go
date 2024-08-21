@@ -7,7 +7,11 @@ import (
 )
 
 func ExecuteTemplate(w http.ResponseWriter, r *http.Request, pages []string, data any) {
-	pages = append(pages, "template/base.html")
+	basic_pages := []string{
+		"template/base.html",
+		"template/components/navigation.html",
+	}
+	pages = append(pages, basic_pages...)
 	tmpl, err_tmpl := template.ParseFiles(pages...)
 	if err_tmpl != nil {
 		fmt.Println("err", err_tmpl)
