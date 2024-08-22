@@ -1,17 +1,22 @@
-{{define "title"}}Home Page{{end}}
+{{define "style"}}
+<link rel="stylesheet" href="/static/styles.css">
+{{end}}
+{{define "title"}}Music Hub{{end}}
 
 {{define "content"}}
 {{block "carousel" .}}{{end}}
-<main class="main-cards">
-    {{range $key,$artist := .}}
-    <a class="card-link" href="/artists/{{$artist.Id}}">
+<main>
+    <div class="cards-container">
+        {{range $key,$artist := .}}
         <div class="card">
-            <img src="{{$artist.Image}}" alt="" class="card-img">
-            <div class="card-body">
-                <h3 class="card-title">{{$artist.Name}}</h3>
+            <a id="anchor" href="http://localhost:8000/artists/{{$artist.Id}}">
+            <img src="{{.Image}}" alt="{{.Name}}Image">
+            <div class="card-title">
+               <h3 id="anchor">{{$artist.Name}}</h3>
+            </a>
             </div>
         </div>
-    </a>
-    {{end}}
+        {{end}}
+    </div>
 </main>
 {{end}}

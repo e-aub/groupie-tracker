@@ -1,0 +1,132 @@
+/* Spotify-inspired colors */
+:root {
+    --green: #1db954;
+    --black: #000;
+    --white: #fff;
+    --gray: #1F1F1F;
+    --scndgray: #1F1F1F;
+    --lightgray: #D9D9D9;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--black);
+}
+
+header {
+    width: 100%;
+    background-color: var(--gray);
+    padding: 1em 0;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.logo-container {
+    margin: 0 auto;
+    width: fit-content;
+}
+
+.logo {
+    width: 120px;
+    height: auto;
+}
+
+.carousel {
+    margin-top: 70px;
+    position: relative;
+    width: 100%;
+    height: max-content;
+    
+}
+.carousel > .carousel-img {
+    width: 100%;
+    min-height: 400px;
+    max-height: 80vh;
+    height: auto;
+    filter: contrast(150%) brightness(30%); 
+    opacity: .3;
+}
+.carousel-img.active {
+    opacity: 1;
+}
+
+.carousel-caption {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 90%;
+}
+.carousel-title {
+    width: 100%;
+    color: var(--green);
+    font-size: 6vmax;
+    font-size: 12vmin;
+    /* background-color: #00000031; */
+    text-shadow: 0 0 .4em var(--black),0 0 .4em var(--black);
+    /* backdrop-filter: blur(20px); */
+    padding: 1em 0;
+    border-radius: 1rem;
+    text-align: center;
+    white-space: nowrap;
+    /* border-bottom: .2em solid var(--green);
+    box-shadow: 0 0 .4rem var(--green), 0 0 .4rem var(--green); */
+    user-select: none;
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 1em;
+}
+.cards-container {
+    /* margin-top: 100px; */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    margin: 10px;
+    height: 350px;
+    width: 240px;
+    background-image: linear-gradient(to bottom right, #3A3838 20%, #1F1F1F 80%);
+    border: 2px solid var(--gray);
+    border-radius: 10px;
+    /* padding: 10px; */
+}
+
+.card img {
+   /* transform: scale(100%); */
+    object-fit: cover;
+    border-radius: 10px 10px 0 0;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 10px;
+    margin-top: 30px;
+}
+
+.card-title a {
+    color: var(--lightgray);
+    text-decoration: none;
+}
+
+.card-title a:hover {
+    color: var(--green);
+}
+
+footer {
+    background-color: var(--green);
+    padding: 1em;
+    text-align: center;
+    color: var(--white);
+}

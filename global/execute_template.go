@@ -10,6 +10,7 @@ func ExecuteTemplate(w http.ResponseWriter, r *http.Request, pages []string, dat
 	basic_pages := []string{
 		"template/base.html",
 		"template/components/navigation.html",
+		"template/components/footer.html",
 	}
 	pages = append(pages, basic_pages...)
 	tmpl, err_tmpl := template.ParseFiles(pages...)
