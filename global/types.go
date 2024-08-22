@@ -34,7 +34,3 @@ type ArtistRelation struct {
 	Id             int                 `json:"id"`
 	DatesLocations map[string][]string `json:"datesLocations"`
 }
-
-/*
-
- */

@@ -2,19 +2,33 @@ package global
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
-var BaseUrl string = "https://groupietrackers.herokuapp.com/api"
+var BaseUrl string = "https://groupietrackers.herokapp.com/api"
 
-func Read(w http.ResponseWriter, r *http.Request, url string, data any, wg *CheckWG) {
+// https://groupietrackers.herokuapp.com/api
+
+func Read(w http.ResponseWriter, err *error, url string, data any, wg *CheckWG) {
 	if !wg.NotWG {
 		defer wg.WG.Done()
 	}
-	res, err := http.Get(BaseUrl + url)
-	if err != nil {
-		http.Error(w, "page not found", http.StatusNotFound)
+	res, errr := http.Get(BaseUrl + url)
+	if errr != nil {
+		// http.Error(w, "page not found", http.StatusNotFound)
+		fmt.Println("khhh")
+		err = &errr
+		return
+		
+
 	}
+	fmt.Println("khhh")
 	defer res.Body.Close()
-	json.NewDecoder(res.Body).Decode(data)
+	errr = json.NewDecoder(res.Body).Decode(data)
+	if errr != nil {
+		// http.Error(w, "page not found", http.StatusNotFound)
+		err = &errr
+		return
+	}
 }

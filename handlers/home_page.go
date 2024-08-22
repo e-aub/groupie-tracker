@@ -1,20 +1,36 @@
 package handlers
 
 import (
-	"groupie_tracker/global"
+	"fmt"
 	"net/http"
+
+	"groupie_tracker/global"
 )
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
-	var artists []global.Artist
-	if r.URL.Path != "/" {
-		http.Error(w, "page not found!", 404)
+	if r.Method != http.MethodGet {
+		HandleError(w, r, Error{Code: http.StatusMethodNotAllowed, Message: "Method not allowed!"})
 		return
 	}
+	
+	if r.URL.Path != "/" {
+		HandleError(w, r, Error{Code: http.StatusNotFound, Message: "page not found!"})
+		return
+	}
+
+	var artists []global.Artist
 	url := "/artists"
 	var wg global.CheckWG
+	var err error
 	wg.NotWG = true
-	global.Read(w, r, url, &artists, &wg)
+
+	global.Read(w, &err, url, &artists, &wg)
+	fmt.Println(err)
+
+	if err != nil {
+		HandleError(w, r, Error{Code: http.StatusInternalServerError, Message: err.Error()})
+		return
+	}
 	pages := []string{
 		"template/pages/home.html",
 		"template/components/carousel.html",
