@@ -1,12 +1,12 @@
 package global
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 )
 
 func ExecuteTemplate(w http.ResponseWriter, r *http.Request, pages []string, data any) {
+	err := Error{Code: http.StatusInternalServerError, Message: "Server Error!"}
 	basic_pages := []string{
 		"template/base.html",
 		"template/components/navigation.html",
@@ -15,12 +15,12 @@ func ExecuteTemplate(w http.ResponseWriter, r *http.Request, pages []string, dat
 	pages = append(pages, basic_pages...)
 	tmpl, err_tmpl := template.ParseFiles(pages...)
 	if err_tmpl != nil {
-		fmt.Println("err", err_tmpl)
+		HandleError(w, r, err)
 		return
 	}
-	err := tmpl.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		fmt.Println("err", err.Error())
+	err_tmpl = tmpl.ExecuteTemplate(w, "base", data)
+	if err_tmpl != nil {
+		HandleError(w, r, err)
 		return
 	}
 }

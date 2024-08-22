@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"groupie_tracker/global"
@@ -9,12 +8,11 @@ import (
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		HandleError(w, r, Error{Code: http.StatusMethodNotAllowed, Message: "Method not allowed!"})
+		global.HandleError(w, r, global.Error{Code: http.StatusMethodNotAllowed, Message: "Method not allowed!"})
 		return
 	}
-	
 	if r.URL.Path != "/" {
-		HandleError(w, r, Error{Code: http.StatusNotFound, Message: "page not found!"})
+		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "page not found!"})
 		return
 	}
 
@@ -23,12 +21,9 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	var wg global.CheckWG
 	var err error
 	wg.NotWG = true
-
 	global.Read(w, &err, url, &artists, &wg)
-	fmt.Println(err)
-
 	if err != nil {
-		HandleError(w, r, Error{Code: http.StatusInternalServerError, Message: err.Error()})
+		global.HandleError(w, r, global.Error{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 	pages := []string{
