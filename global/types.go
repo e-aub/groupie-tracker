@@ -1,12 +1,5 @@
 package global
 
-import "sync"
-
-type CheckWG struct {
-	WG   sync.WaitGroup
-	NotWG bool
-}
-
 type Artist struct {
 	Id           int      `json:"id"`
 	Image        string   `json:"image"`

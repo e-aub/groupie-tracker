@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"groupie_tracker/global"
 )
@@ -19,7 +20,8 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 		Dates     global.ArtistDate
 		Relations global.ArtistRelation
 	}
-	var wg global.CheckWG
+	var wg sync.WaitGroup
+
 	// handle url
 	url_path := strings.Split(r.URL.Path, "/")
 	id := url_path[2]
@@ -35,21 +37,30 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	dates_url := "/dates/" + id
 	relations_url := "/relation/" + id
 	// get data from api
-	wg.WG.Add(4)
-	go global.Read(w, &err, artist_url, &context.Artists, &wg)
-	go global.Read(w, &err, locations_url, &context.Locations, &wg)
-	go global.Read(w, &err, dates_url, &context.Dates, &wg)
-	go global.Read(w, &err, relations_url, &context.Relations, &wg)
-	wg.WG.Wait()
+	errchan := make(chan error)
+	done := make(chan bool)
 
-	if err != nil {
-		global.HandleError(w, r, global.Error{Code: http.StatusInternalServerError, Message: err.Error()})
+	wg.Add(4)
+	go global.Read(w, errchan, artist_url, &context.Artists, &wg)
+	go global.Read(w, errchan, locations_url, &context.Locations, &wg)
+	go global.Read(w, errchan, dates_url, &context.Dates, &wg)
+	go global.Read(w, errchan, relations_url, &context.Relations, &wg)
+
+	go func() {
+		wg.Wait()
+		close(done)
+		close(errchan)
+	}()
+
+	// Listen for the first error or completion
+	select {
+	case <-errchan:
+		// Handle the first error and return
+		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "not found!"})
 		return
+	case <-done:
+		// If done without errors, proceed to execute the template
+		pages := []string{"template/pages/details.html"}
+		global.ExecuteTemplate(w, r, pages, context)
 	}
-
-	pages := []string{
-		"template/pages/details.html",
-	}
-
-	global.ExecuteTemplate(w, r, pages, context)
 }
