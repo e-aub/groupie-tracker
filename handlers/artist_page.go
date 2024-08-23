@@ -23,8 +23,8 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	// handle url
 	url_path := strings.Split(r.URL.Path, "/")
 	id := url_path[2]
-	var err error
-	_, err = strconv.Atoi(id)
+	// var err error
+	_, err := strconv.Atoi(id)
 	if err != nil || r.URL.Path != ("/artists/"+id) {
 		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "page not found!"})
 		return
@@ -40,18 +40,13 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	go global.Read(w, &err, locations_url, &context.Locations, &wg)
 	go global.Read(w, &err, dates_url, &context.Dates, &wg)
 	go global.Read(w, &err, relations_url, &context.Relations, &wg)
+	wg.WG.Wait()
+
 	if err != nil {
 		global.HandleError(w, r, global.Error{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
-	if context.Artists.Id == 0 {
-		
-		global.HandleError(w, r, global.Error{Code: http.StatusNoContent, Message: "No Content!"})
-		return
-	}
-
-	wg.WG.Wait()
 	pages := []string{
 		"template/pages/details.html",
 	}
