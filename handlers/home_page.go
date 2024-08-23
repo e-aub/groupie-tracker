@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"sync"
 
 	"groupie_tracker/global"
 )
@@ -18,17 +19,16 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 
 	var artists []global.Artist
 	url := "/artists"
-	var wg global.CheckWG
-	// var err error
+	var wg sync.WaitGroup
 	// wg.NotWG = true
 	errchan := make(chan error)
 	done := make(chan bool)
-	wg.WG.Add(1)
+	wg.Add(1)
 
 	go global.Read(w, errchan, url, &artists, &wg)
 
 	go func() {
-		wg.WG.Wait()
+		wg.Wait()
 		close(done)
 		close(errchan)
 	}()

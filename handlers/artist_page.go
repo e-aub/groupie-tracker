@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"groupie_tracker/global"
 )
@@ -19,7 +20,8 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 		Dates     global.ArtistDate
 		Relations global.ArtistRelation
 	}
-	var wg global.CheckWG
+	var wg sync.WaitGroup
+
 	// handle url
 	url_path := strings.Split(r.URL.Path, "/")
 	id := url_path[2]
@@ -38,23 +40,23 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	errchan := make(chan error)
 	done := make(chan bool)
 
-	wg.WG.Add(4)
+	wg.Add(4)
 	go global.Read(w, errchan, artist_url, &context.Artists, &wg)
 	go global.Read(w, errchan, locations_url, &context.Locations, &wg)
 	go global.Read(w, errchan, dates_url, &context.Dates, &wg)
 	go global.Read(w, errchan, relations_url, &context.Relations, &wg)
 
 	go func() {
-		wg.WG.Wait()
+		wg.Wait()
 		close(done)
 		close(errchan)
 	}()
-	
+
 	// Listen for the first error or completion
 	select {
-	case err := <-errchan:
+	case <-errchan:
 		// Handle the first error and return
-		global.HandleError(w, r, global.Error{Code: http.StatusInternalServerError, Message: err.Error()})
+		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "not found!"})
 		return
 	case <-done:
 		// If done without errors, proceed to execute the template
