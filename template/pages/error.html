@@ -6,7 +6,10 @@
 {{end}}
 
 {{define "content"}}
-<main>
-    <h1 style="margin-top: 200px; color: white;">{{.Message}}</h1>
+<main class="content">
+    <div class="error">
+        <img src="/static/images/warning.png" class="error-img" alt="warning image">
+        <p style="margin-top: 200px; color: white;" class="error-msg">{{.Code}} {{.Message}}</p>
+    </div>
 </main>
 {{end}}

@@ -35,7 +35,28 @@ header {
     width: 120px;
     height: auto;
 }
+.error {
+    margin: auto;
+    max-width: 100%;
+    width: max-content;
+    height: max-content;
+    text-align: center;
+}
+.error-img {
+    width: 500px;
+    max-width: 100%;
+    filter: drop-shadow(0 0 10px red);
+}
+p.error-msg {
+    font-size: 2vmin;
+    font-size: 3vmax;
+    font-weight: bold;
+    color: var(--white);
+    text-align: center;
+    margin: 20px !important;
 
+    text-shadow: 0 0 5px yellow, 0 0 10px red;
+}
 .carousel {
     margin-top: 70px;
     position: relative;
@@ -84,6 +105,7 @@ main {
     flex-wrap: wrap;
     justify-content: center;
     padding: 1em;
+    min-height: 90vh;
 }
 .cards-container {
     /* margin-top: 100px; */
@@ -126,7 +148,10 @@ main {
 
 footer {
     background-color: var(--green);
-    padding: 1em;
+    padding: .3rem;
     text-align: center;
     color: var(--white);
+    filter: contrast(100%);
+    font-size: 30px;
+    font-weight: 600;
 }
