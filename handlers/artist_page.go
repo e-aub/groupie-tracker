@@ -35,26 +35,30 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	dates_url := "/dates/" + id
 	relations_url := "/relation/" + id
 	// get data from api
+	errchan := make(chan error)
+	done := make(chan bool)
+
 	wg.WG.Add(4)
-	go global.Read(w, &err, artist_url, &context.Artists, &wg)
-	go global.Read(w, &err, locations_url, &context.Locations, &wg)
-	go global.Read(w, &err, dates_url, &context.Dates, &wg)
-	go global.Read(w, &err, relations_url, &context.Relations, &wg)
-	if err != nil {
+	go global.Read(w, errchan, artist_url, &context.Artists, &wg)
+	go global.Read(w, errchan, locations_url, &context.Locations, &wg)
+	go global.Read(w, errchan, dates_url, &context.Dates, &wg)
+	go global.Read(w, errchan, relations_url, &context.Relations, &wg)
+
+	go func() {
+		wg.WG.Wait()
+		close(done)
+		close(errchan)
+	}()
+	
+	// Listen for the first error or completion
+	select {
+	case err := <-errchan:
+		// Handle the first error and return
 		global.HandleError(w, r, global.Error{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
+	case <-done:
+		// If done without errors, proceed to execute the template
+		pages := []string{"template/pages/details.html"}
+		global.ExecuteTemplate(w, r, pages, context)
 	}
-
-	if context.Artists.Id == 0 {
-		
-		global.HandleError(w, r, global.Error{Code: http.StatusNoContent, Message: "No Content!"})
-		return
-	}
-
-	wg.WG.Wait()
-	pages := []string{
-		"template/pages/details.html",
-	}
-
-	global.ExecuteTemplate(w, r, pages, context)
 }
