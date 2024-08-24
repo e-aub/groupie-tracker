@@ -1,0 +1,30 @@
+:root {
+    --green: #1db954;
+    --black: #000;
+    --white: #fff;
+    --gray: #1F1F1F;
+    --scndgray: #1F1F1F;
+    --lightgray: #D9D9D9;
+}
+.error {
+    margin: auto;
+    max-width: 100%;
+    width: max-content;
+    height: max-content;
+    text-align: center;
+}
+.error-img {
+    width: 500px;
+    max-width: 100%;
+    filter: drop-shadow(0 0 10px red);
+}
+p.error-msg {
+    font-size: 2vmin;
+    font-size: 3vmax;
+    font-weight: bold;
+    color: var(--white);
+    text-align: center;
+    margin: 20px !important;
+
+    text-shadow: 0 0 5px yellow, 0 0 10px red;
+}
