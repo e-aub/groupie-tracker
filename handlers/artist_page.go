@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -60,6 +61,7 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 		return
 	case <-done:
 		global.GetLocationsId(&context.Locations)
+		fmt.Println(context.Locations.LocationsIds[0])
 		// If done without errors, proceed to execute the template
 		pages := []string{"template/pages/details.html"}
 		global.ExecuteTemplate(w, r, pages, context)

@@ -46,7 +46,9 @@
                             <h2>Locations</h2>
                         </div>
                         {{range $i, $location := .Locations.Locations}}
-                        <a id="anchor" href="https://www.google.com/maps/place/?q=place_id:{{index $.Locations.LocationsIds $i}}">
+                        <!-- <a id="anchor" href="https://www.google.com/maps/place/?q=place_id:{{index $.Locations.LocationsIds $i}}"> -->
+                        <a id="anchor" href="https://www.google.com/maps/@{{index $.Locations.LocationsIds $i}}">
+                        
                             <p>{{$location}}</p>
                         </a>
                         {{end}}

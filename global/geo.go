@@ -38,7 +38,34 @@ type (
 
 	GeoResponse struct {
 		Results []struct {
-			PlaceID string `json:"place_id"`
+			PlaceID          string `json:"place_id"`
+			FormattedAddress string `json:"formatted_address"`
+			Geometry         struct {
+				Location struct {
+					Lat float64 `json:"lat"`
+					Lng float64 `json:"lng"`
+				} `json:"location"`
+				Bounds struct {
+					Northeast struct {
+						Lat float64 `json:"lat"`
+						Lng float64 `json:"lng"`
+					} `json:"northeast"`
+					Southwest struct {
+						Lat float64 `json:"lat"`
+						Lng float64 `json:"lng"`
+					} `json:"southwest"`
+				} `json:"bounds"`
+				Viewport struct {
+					Northeast struct {
+						Lat float64 `json:"lat"`
+						Lng float64 `json:"lng"`
+					} `json:"northeast"`
+					Southwest struct {
+						Lat float64 `json:"lat"`
+						Lng float64 `json:"lng"`
+					} `json:"southwest"`
+				} `json:"viewport"`
+			} `json:"geometry"`
 		} `json:"results"`
 		Status string `json:"status"`
 	}
@@ -57,7 +84,9 @@ func GetLocationsId(data *ArtistLocation) error {
 			// errChan <- err
 			return err
 		}
-		*&data.LocationsIds = append(*&data.LocationsIds, res.Results[0].PlaceID)
+		// *&data.LocationsIds = append(*&data.LocationsIds, res.Results[0].PlaceID)
+
+		*&data.LocationsIds = append(*&data.LocationsIds, fmt.Sprintf("%g,%g", res.Results[0].Geometry.Location.Lat, res.Results[0].Geometry.Location.Lng))
 
 	}
 
