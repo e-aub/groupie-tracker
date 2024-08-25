@@ -25,7 +25,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	done := make(chan bool)
 	wg.Add(1)
 
-	go global.Read(w, errchan, url, &artists, &wg)
+	go global.Read(errchan, url, &artists, &wg)
 
 	go func() {
 		wg.Wait()

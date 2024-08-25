@@ -12,9 +12,9 @@ type Artist struct {
 	Relations    string   `json:"relations"`
 }
 type ArtistLocation struct {
-	Id        int      `json:"id"`
-	Locations []string `json:"locations"`
-	Dates     string   `json:"dates"`
+	Id           int      `json:"id"`
+	Locations    []string `json:"locations"`
+	LocationsIds []string
 }
 type Locations struct {
 	Index []ArtistLocation `json:"index"`

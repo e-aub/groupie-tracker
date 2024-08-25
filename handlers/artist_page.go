@@ -41,10 +41,10 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	done := make(chan bool)
 
 	wg.Add(4)
-	go global.Read(w, errchan, artist_url, &context.Artists, &wg)
-	go global.Read(w, errchan, locations_url, &context.Locations, &wg)
-	go global.Read(w, errchan, dates_url, &context.Dates, &wg)
-	go global.Read(w, errchan, relations_url, &context.Relations, &wg)
+	go global.Read(errchan, artist_url, &context.Artists, &wg)
+	go global.Read(errchan, locations_url, &context.Locations, &wg)
+	go global.Read(errchan, dates_url, &context.Dates, &wg)
+	go global.Read(errchan, relations_url, &context.Relations, &wg)
 
 	go func() {
 		wg.Wait()
@@ -59,6 +59,7 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "not found!"})
 		return
 	case <-done:
+		global.GetLocationsId(&context.Locations)
 		// If done without errors, proceed to execute the template
 		pages := []string{"template/pages/details.html"}
 		global.ExecuteTemplate(w, r, pages, context)
