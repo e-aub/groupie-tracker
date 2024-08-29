@@ -28,70 +28,34 @@ func Fetch(url string, typ any) error {
 }
 
 type (
-	Index struct {
-		Location1 []Location `json:"index"`
-	}
-
-	Location struct {
-		Location []string `json:"locations"`
-	}
-
 	GeoResponse struct {
 		Results []struct {
-			PlaceID          string `json:"place_id"`
-			FormattedAddress string `json:"formatted_address"`
-			Geometry         struct {
+			PlaceID  string `json:"place_id"`
+			Geometry struct {
 				Location struct {
 					Lat float64 `json:"lat"`
 					Lng float64 `json:"lng"`
 				} `json:"location"`
-				Bounds struct {
-					Northeast struct {
-						Lat float64 `json:"lat"`
-						Lng float64 `json:"lng"`
-					} `json:"northeast"`
-					Southwest struct {
-						Lat float64 `json:"lat"`
-						Lng float64 `json:"lng"`
-					} `json:"southwest"`
-				} `json:"bounds"`
-				Viewport struct {
-					Northeast struct {
-						Lat float64 `json:"lat"`
-						Lng float64 `json:"lng"`
-					} `json:"northeast"`
-					Southwest struct {
-						Lat float64 `json:"lat"`
-						Lng float64 `json:"lng"`
-					} `json:"southwest"`
-				} `json:"viewport"`
 			} `json:"geometry"`
 		} `json:"results"`
 		Status string `json:"status"`
 	}
 )
 
-func GetLocationsId(data *ArtistLocation) error {
+func GetLocationsId(data *ArtistLocation, errChan chan error) {
 	apiKey := "AIzaSyBOypms8DmfMpEx6-IRJzwz7lvBmE4kr94"
 	for _, location := range data.Locations {
 		var res GeoResponse
 		adress := fmt.Sprintf("https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s", location, apiKey)
 		err := Fetch(adress, &res)
+		fmt.Println(res)
 		if err != nil {
-			// errChan <- err
-			return err
+			errChan <- err
+			return
 		} else if res.Status != "OK" {
-			// errChan <- err
-			return err
+			errChan <- errors.New(res.Status)
+			return
 		}
-		// *&data.LocationsIds = append(*&data.LocationsIds, res.Results[0].PlaceID)
-
-		*&data.LocationsIds = append(*&data.LocationsIds, fmt.Sprintf("%g,%g", res.Results[0].Geometry.Location.Lat, res.Results[0].Geometry.Location.Lng))
-
+		data.LocationsIds = append(data.LocationsIds, fmt.Sprintf("%g,%g", res.Results[0].Geometry.Location.Lat, res.Results[0].Geometry.Location.Lng))
 	}
-
-	// defer func() {
-	// 	wg.Done()
-	// }()
-	return nil
 }

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -39,11 +38,20 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	relations_url := "/relation/" + id
 	// get data from api
 	errchan := make(chan error)
-	done := make(chan bool)
+	done := make(chan struct{})
 
 	wg.Add(4)
+	go func() {
+		global.Read(errchan, locations_url, &context.Locations, &wg)
+		global.GetLocationsId(&context.Locations, errchan)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	errchan <- err
+		// 	return
+		// }
+		defer wg.Done()
+	}()
 	go global.Read(errchan, artist_url, &context.Artists, &wg)
-	go global.Read(errchan, locations_url, &context.Locations, &wg)
 	go global.Read(errchan, dates_url, &context.Dates, &wg)
 	go global.Read(errchan, relations_url, &context.Relations, &wg)
 
@@ -60,8 +68,6 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "not found!"})
 		return
 	case <-done:
-		global.GetLocationsId(&context.Locations)
-		fmt.Println(context.Locations.LocationsIds[0])
 		// If done without errors, proceed to execute the template
 		pages := []string{"template/pages/details.html"}
 		global.ExecuteTemplate(w, r, pages, context)

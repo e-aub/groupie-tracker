@@ -12,7 +12,6 @@ type Error struct {
 
 // HandleError sends an HTTP response with the specified error code and renders an error page using the provided error details.
 func HandleError(w http.ResponseWriter, r *http.Request, errType Error) {
-	w.WriteHeader(errType.Code)
 	pages := []string{
 		"template/base.html",
 		"template/pages/error.html",
