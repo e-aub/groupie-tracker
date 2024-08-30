@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -10,6 +12,8 @@ import (
 )
 
 func ArtistPage(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithCancelCause(r.Context())
+
 	if r.Method != http.MethodGet {
 		global.HandleError(w, r, global.Error{Code: http.StatusMethodNotAllowed, Message: "Method not allowed!"})
 		return
@@ -42,18 +46,17 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 
 	wg.Add(4)
 	go func() {
-		global.Read(errchan, locations_url, &context.Locations, &wg)
+		global.Read(ctx, errchan, locations_url, &context.Locations, &wg)
 		global.GetLocationsId(&context.Locations, errchan)
-		// if err != nil {
-		// 	fmt.Println(err)
-		// 	errchan <- err
-		// 	return
-		// }
+		if err != nil {
+			errchan <- err
+			return
+		}
 		defer wg.Done()
 	}()
-	go global.Read(errchan, artist_url, &context.Artists, &wg)
-	go global.Read(errchan, dates_url, &context.Dates, &wg)
-	go global.Read(errchan, relations_url, &context.Relations, &wg)
+	go global.Read(ctx, errchan, artist_url, &context.Artists, &wg)
+	go global.Read(ctx, errchan, dates_url, &context.Dates, &wg)
+	go global.Read(ctx, errchan, relations_url, &context.Relations, &wg)
 
 	go func() {
 		wg.Wait()
@@ -62,14 +65,21 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Listen for the first error or completion
-	select {
-	case <-errchan:
-		// Handle the first error and return
-		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "not found!"})
-		return
-	case <-done:
-		// If done without errors, proceed to execute the template
-		pages := []string{"template/pages/details.html"}
-		global.ExecuteTemplate(w, r, pages, context)
+	for {
+		select {
+		case err := <-errchan:
+			fmt.Println(err)
+			cancel(err)
+		case <-ctx.Done():
+			err := ctx.Err().Error()
+			fmt.Println(err)
+			global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "not found!"})
+			return
+		case <-done:
+			// If done without errors, proceed to execute the template
+			pages := []string{"template/pages/details.html"}
+			global.ExecuteTemplate(w, r, pages, context)
+		}
 	}
+
 }

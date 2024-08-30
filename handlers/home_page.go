@@ -18,14 +18,14 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var artists []global.Artist
-	url := "/artists"
+	// url := "/artists"
 	var wg sync.WaitGroup
 	// wg.NotWG = true
 	errchan := make(chan error)
 	done := make(chan bool)
 	wg.Add(1)
 
-	go global.Read(errchan, url, &artists, &wg)
+	// go global.Read(errchan, url, &artists, &wg)
 
 	go func() {
 		wg.Wait()
