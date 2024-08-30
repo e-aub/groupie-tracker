@@ -3,6 +3,8 @@ package global
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
 	"strings"
 	"sync"
@@ -10,7 +12,7 @@ import (
 
 var BaseUrl string = "https://groupietrackers.herokuapp.com/api"
 
-func Read(ctx context.Context, err chan error, url string, data any, wg *sync.WaitGroup) {
+func FetchGoRoutine(ctx context.Context, err chan error, url string, data any, wg *sync.WaitGroup) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -34,4 +36,23 @@ func Read(ctx context.Context, err chan error, url string, data any, wg *sync.Wa
 		}
 	}
 
+}
+
+func Fetch(url string, typ any) error {
+	response, err := http.Get(url)
+	if err != nil {
+		return err
+	} else if response.StatusCode != 200 {
+		return errors.New("not 200")
+	}
+	defer response.Body.Close()
+	Data, err := io.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(Data, typ)
+	if err != nil {
+		return err
+	}
+	return nil
 }
