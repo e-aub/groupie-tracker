@@ -36,27 +36,27 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	artist_url := "/artists/" + id
-	locations_url := "/locations/" + id
-	dates_url := "/dates/" + id
-	relations_url := "/relation/" + id
+	artist_url := "https://groupietrackers.herokuapp.com/api/artists/" + id
+	locations_url := "https://groupietrackers.herokuapp.com/api/locations/" + id
+	dates_url := "https://groupietrackers.herokuapp.com/api/dates/" + id
+	relations_url := "https://groupietrackers.herokuapp.com/api/relation/" + id
 	// get data from api
 	errchan := make(chan error)
 	done := make(chan struct{})
 
 	wg.Add(4)
 	go func() {
-		global.FetchGoRoutine(ctx, errchan, locations_url, &context.Locations, &wg)
-		global.GetLocationsId(&context.Locations, errchan)
+		global.FetchGoRoutine(ctx, errchan, locations_url, &context.Locations, &wg, "locations")
+		global.GetLocationsId(ctx, &context.Locations, errchan)
 		if err != nil {
 			errchan <- err
 			return
 		}
 		defer wg.Done()
 	}()
-	go global.FetchGoRoutine(ctx, errchan, artist_url, &context.Artists, &wg)
-	go global.FetchGoRoutine(ctx, errchan, dates_url, &context.Dates, &wg)
-	go global.FetchGoRoutine(ctx, errchan, relations_url, &context.Relations, &wg)
+	go global.FetchGoRoutine(ctx, errchan, artist_url, &context.Artists, &wg, "")
+	go global.FetchGoRoutine(ctx, errchan, dates_url, &context.Dates, &wg, "")
+	go global.FetchGoRoutine(ctx, errchan, relations_url, &context.Relations, &wg, "")
 
 	go func() {
 		wg.Wait()
@@ -65,22 +65,16 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Listen for the first error or completion
-	for {
-		select {
-		case err := <-errchan:
-			fmt.Println(err)
-			cancel(err)
-		case <-ctx.Done():
-			err := ctx.Err().Error()
-			fmt.Println(err)
-			global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "not found!"})
-			return
-		case <-done:
-			// If done without errors, proceed to execute the template
-			pages := []string{"template/pages/details.html"}
-			global.ExecuteTemplate(w, r, pages, context)
-			return
-		}
-	}
 
+	select {
+	case err := <-errchan:
+		fmt.Println(err)
+		cancel(err)
+		fmt.Println(err)
+		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "not found!"})
+	case <-done:
+		// If done without errors, proceed to execute the template
+		pages := []string{"template/pages/details.html"}
+		global.ExecuteTemplate(w, r, pages, context)
+	}
 }

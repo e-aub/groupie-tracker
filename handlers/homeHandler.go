@@ -17,9 +17,9 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var artists []global.Artist
-	url := "/artists"
+	url := "https://groupietrackers.herokuapp.com/api/artists"
 
-	err := global.Fetch(global.BaseUrl+url, &artists)
+	err := global.Fetch(url, &artists)
 	if err != nil {
 		global.HandleError(w, r, global.Error{Code: http.StatusInternalServerError, Message: err.Error()})
 		return

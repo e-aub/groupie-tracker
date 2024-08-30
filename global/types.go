@@ -16,9 +16,9 @@ type (
 		Index []ArtistLocation `json:"index"`
 	}
 	ArtistLocation struct {
-		Id           int      `json:"id"`
-		Locations    []string `json:"locations"`
-		LocationsIds []string
+		Id                   int      `json:"id"`
+		Locations            []string `json:"locations"`
+		LocationsCoordinates map[string]string
 	}
 	ArtistDate struct {
 		Id   int      `json:"id"`
