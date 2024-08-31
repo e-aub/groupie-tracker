@@ -10,14 +10,14 @@
     margin-top: 70px;
     position: relative;
     width: 100%;
-    height: max-content;
+    height: 100vh;
     
 }
 .carousel > .carousel-img {
     width: 100%;
     min-height: 400px;
-    max-height: 80vh;
-    height: auto;
+    /* max-height: 80vh; */
+    height: 100vh;
     filter: contrast(150%) brightness(30%); 
     opacity: .3;
 }
@@ -27,7 +27,7 @@
 
 .carousel-caption {
     position: absolute;
-    top: 50%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%,-50%);
     width: 90%;
@@ -35,8 +35,8 @@
 .carousel-title {
     width: 100%;
     color: var(--green);
-    font-size: 6vmax;
-    font-size: 12vmin;
+    font-size: 7vmax;
+    font-size: 11vmin;
     /* background-color: #00000031; */
     text-shadow: 0 0 .4em var(--black),0 0 .4em var(--black);
     /* backdrop-filter: blur(20px); */
