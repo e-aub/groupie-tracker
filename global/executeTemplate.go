@@ -6,23 +6,26 @@ import (
 	"net/http"
 )
 
-func ExecuteTemplate(w http.ResponseWriter, r *http.Request, pages []string, data any) {
-	err := Error{Code: http.StatusInternalServerError, Message: "Server Error!cc"}
-	basic_pages := []string{
+var (
+	basicPages = []string{
 		"template/base.html",
 		"template/components/navigation.html",
 		"template/components/footer.html",
 	}
-	pages = append(pages, basic_pages...)
-	tmpl, err_tmpl := template.ParseFiles(pages...)
-	if err_tmpl != nil {
-		fmt.Println(err_tmpl)
+	err = Error{Code: http.StatusInternalServerError, Message: "Server Error!"}
+)
+
+func ExecuteTemplate(w http.ResponseWriter, r *http.Request, pages []string, data any) {
+	pages = append(pages, basicPages...)
+	tmpl, parseErr := template.ParseFiles(pages...)
+	if parseErr != nil {
+		fmt.Println(parseErr)
 		HandleError(w, r, err)
 		return
 	}
-	err_tmpl = tmpl.ExecuteTemplate(w, "base", data)
-	if err_tmpl != nil {
-		fmt.Println(err_tmpl)
+	executeErr := tmpl.ExecuteTemplate(w, "base", data)
+	if executeErr != nil {
+		fmt.Println(executeErr)
 		HandleError(w, r, err)
 		return
 	}

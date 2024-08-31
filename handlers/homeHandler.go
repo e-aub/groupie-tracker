@@ -22,10 +22,10 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 
 	err := global.Fetch(url, &artists)
 	if err != nil {
+		fmt.Println(err)
 		global.HandleError(w, r, global.Error{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-	fmt.Println(artists)
 
 	pages := []string{
 		"template/pages/home.html",

@@ -10,14 +10,15 @@ type Error struct {
 	Code    int
 }
 
+var pages = []string{
+	"template/base.html",
+	"template/pages/error.html",
+	"template/components/navigation.html",
+	"template/components/footer.html",
+}
+
 // HandleError sends an HTTP response with the specified error code and renders an error page using the provided error details.
 func HandleError(w http.ResponseWriter, r *http.Request, errType Error) {
-	pages := []string{
-		"template/base.html",
-		"template/pages/error.html",
-		"template/components/navigation.html",
-		"template/components/footer.html",
-	}
 	tmpl, err := template.ParseFiles(pages...)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

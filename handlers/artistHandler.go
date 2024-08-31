@@ -20,8 +20,8 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 		global.HandleError(w, r, global.Error{Code: http.StatusMethodNotAllowed, Message: "Method not allowed!"})
 		return
 	}
-	var context struct {
-		Artists   global.Artist
+	var artistDetailes struct {
+		Artist    global.Artist
 		Locations global.ArtistLocation
 		Dates     global.ArtistDate
 		Relations global.ArtistRelation
@@ -45,13 +45,13 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 
 	wg.Add(4)
 	go func() {
-		global.FetchGoRoutine(ctx, errchan, locations_url, &context.Locations, &wg, "locations")
-		global.GetLocationsId(ctx, &context.Locations, errchan)
+		global.FetchGoRoutine(ctx, errchan, locations_url, &artistDetailes.Locations, &wg, "locations")
+		global.GetLocationsId(ctx, &artistDetailes.Locations, errchan)
 		defer wg.Done()
 	}()
-	go global.FetchGoRoutine(ctx, errchan, artist_url, &context.Artists, &wg, "")
-	go global.FetchGoRoutine(ctx, errchan, dates_url, &context.Dates, &wg, "")
-	go global.FetchGoRoutine(ctx, errchan, relations_url, &context.Relations, &wg, "")
+	go global.FetchGoRoutine(ctx, errchan, artist_url, &artistDetailes.Artist, &wg, "")
+	go global.FetchGoRoutine(ctx, errchan, dates_url, &artistDetailes.Dates, &wg, "")
+	go global.FetchGoRoutine(ctx, errchan, relations_url, &artistDetailes.Relations, &wg, "")
 
 	go func() {
 		wg.Wait()
@@ -69,6 +69,6 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	case <-done:
 		// If done without errors, proceed to execute the template
 		pages := []string{"template/pages/details.html"}
-		global.ExecuteTemplate(w, r, pages, context)
+		global.ExecuteTemplate(w, r, pages, artistDetailes)
 	}
 }
