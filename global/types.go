@@ -1,6 +1,10 @@
 package global
 
 type (
+	Error struct {
+		Message string
+		Code    int
+	}
 	Artist struct {
 		Id           int      `json:"id"`
 		Image        string   `json:"image"`
@@ -28,7 +32,6 @@ type (
 	}
 	GeoResponse struct {
 		Results []struct {
-			PlaceID  string `json:"place_id"`
 			Geometry struct {
 				Location struct {
 					Lat float64 `json:"lat"`

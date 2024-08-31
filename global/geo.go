@@ -8,8 +8,10 @@ import (
 )
 
 func GetLocationsId(ctx context.Context, data *ArtistLocation, errChan chan error) {
-	var geoWg sync.WaitGroup
-	var mutex sync.Mutex
+	var (
+		geoWg sync.WaitGroup
+		mutex sync.Mutex
+	)
 	data.LocationsCoordinates = map[string]string{}
 	select {
 	case <-ctx.Done():

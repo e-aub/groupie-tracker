@@ -5,11 +5,6 @@ import (
 	"net/http"
 )
 
-type Error struct {
-	Message string
-	Code    int
-}
-
 var pages = []string{
 	"template/base.html",
 	"template/pages/error.html",

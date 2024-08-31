@@ -10,48 +10,49 @@ import (
 	"groupie_tracker/global"
 )
 
-var baseUrl = "https://groupietrackers.herokuapp.com/api/"
-
 func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
 	if r.Method != http.MethodGet {
-		global.HandleError(w, r, global.Error{Code: http.StatusMethodNotAllowed, Message: "Method not allowed!"})
+		global.HandleError(w, r, global.MethodNotAllowedErr)
 		return
 	}
-	var artistDetailes struct {
-		Artist    global.Artist
-		Locations global.ArtistLocation
-		Dates     global.ArtistDate
-		Relations global.ArtistRelation
-	}
-	var wg sync.WaitGroup
+	var (
+		baseUrl        = "https://groupietrackers.herokuapp.com/api/"
+		artistDetailes struct {
+			Artist    global.Artist
+			Locations global.ArtistLocation
+			Dates     global.ArtistDate
+			Relations global.ArtistRelation
+		}
+		wg sync.WaitGroup
+	)
 
 	// handle url
 	id := strings.TrimPrefix(r.URL.Path, "/artists/")
 	// var err error
 	if !global.IsId(id) {
-		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "page not found!"})
+		global.HandleError(w, r, global.NotFoundErr)
 		return
 	}
-	artist_url := baseUrl + "artists/" + id
-	locations_url := baseUrl + "locations/" + id
-	dates_url := baseUrl + "dates/" + id
-	relations_url := baseUrl + "relation/" + id
+	artistUrl := baseUrl + "artists/" + id
+	locationsUrl := baseUrl + "locations/" + id
+	datesUrl := baseUrl + "dates/" + id
+	relationsUrl := baseUrl + "relation/" + id
 	// get data from api
 	errchan := make(chan error)
 	done := make(chan struct{})
 
 	wg.Add(4)
 	go func() {
-		global.FetchGoRoutine(ctx, errchan, locations_url, &artistDetailes.Locations, &wg, "locations")
+		global.FetchGoRoutine(ctx, errchan, locationsUrl, &artistDetailes.Locations, &wg, "locations")
 		global.GetLocationsId(ctx, &artistDetailes.Locations, errchan)
 		defer wg.Done()
 	}()
-	go global.FetchGoRoutine(ctx, errchan, artist_url, &artistDetailes.Artist, &wg, "")
-	go global.FetchGoRoutine(ctx, errchan, dates_url, &artistDetailes.Dates, &wg, "")
-	go global.FetchGoRoutine(ctx, errchan, relations_url, &artistDetailes.Relations, &wg, "")
+	go global.FetchGoRoutine(ctx, errchan, artistUrl, &artistDetailes.Artist, &wg, "")
+	go global.FetchGoRoutine(ctx, errchan, datesUrl, &artistDetailes.Dates, &wg, "")
+	go global.FetchGoRoutine(ctx, errchan, relationsUrl, &artistDetailes.Relations, &wg, "")
 
 	go func() {
 		wg.Wait()
@@ -65,7 +66,7 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	case err := <-errchan:
 		fmt.Println(err)
 		cancel()
-		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "not found!"})
+		global.HandleError(w, r, global.NotFoundErr)
 	case <-done:
 		// If done without errors, proceed to execute the template
 		pages := []string{"template/pages/details.html"}
