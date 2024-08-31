@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"groupie_tracker/global"
@@ -24,6 +25,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		global.HandleError(w, r, global.Error{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
+	fmt.Println(artists)
 
 	pages := []string{
 		"template/pages/home.html",

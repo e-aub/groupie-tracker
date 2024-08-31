@@ -27,19 +27,18 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	var wg sync.WaitGroup
 
 	// handle url
-	url_path := strings.Split(r.URL.Path, "/")
-	id := url_path[2]
+	id := strings.TrimPrefix(r.URL.Path, "/artists/")
 	// var err error
 	_, err := strconv.Atoi(id)
-	if err != nil || r.URL.Path != ("/artists/"+id) {
+	if !global.IsId(id) {
 		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "page not found!"})
 		return
 	}
-
-	artist_url := "https://groupietrackers.herokuapp.com/api/artists/" + id
-	locations_url := "https://groupietrackers.herokuapp.com/api/locations/" + id
-	dates_url := "https://groupietrackers.herokuapp.com/api/dates/" + id
-	relations_url := "https://groupietrackers.herokuapp.com/api/relation/" + id
+	baseUrl := "https://groupietrackers.herokuapp.com/api/"
+	artist_url := baseUrl + "artists/" + id
+	locations_url := baseUrl + "locations/" + id
+	dates_url := baseUrl + "dates/" + id
+	relations_url := baseUrl + "relation/" + id
 	// get data from api
 	errchan := make(chan error)
 	done := make(chan struct{})
