@@ -4,15 +4,17 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 
 	"groupie_tracker/global"
 )
 
+var baseUrl = "https://groupietrackers.herokuapp.com/api/"
+
 func ArtistPage(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithCancelCause(r.Context())
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
 
 	if r.Method != http.MethodGet {
 		global.HandleError(w, r, global.Error{Code: http.StatusMethodNotAllowed, Message: "Method not allowed!"})
@@ -29,12 +31,10 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	// handle url
 	id := strings.TrimPrefix(r.URL.Path, "/artists/")
 	// var err error
-	_, err := strconv.Atoi(id)
 	if !global.IsId(id) {
 		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "page not found!"})
 		return
 	}
-	baseUrl := "https://groupietrackers.herokuapp.com/api/"
 	artist_url := baseUrl + "artists/" + id
 	locations_url := baseUrl + "locations/" + id
 	dates_url := baseUrl + "dates/" + id
@@ -47,10 +47,6 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		global.FetchGoRoutine(ctx, errchan, locations_url, &context.Locations, &wg, "locations")
 		global.GetLocationsId(ctx, &context.Locations, errchan)
-		if err != nil {
-			errchan <- err
-			return
-		}
 		defer wg.Done()
 	}()
 	go global.FetchGoRoutine(ctx, errchan, artist_url, &context.Artists, &wg, "")
@@ -68,8 +64,7 @@ func ArtistPage(w http.ResponseWriter, r *http.Request) {
 	select {
 	case err := <-errchan:
 		fmt.Println(err)
-		cancel(err)
-		fmt.Println(err)
+		cancel()
 		global.HandleError(w, r, global.Error{Code: http.StatusNotFound, Message: "not found!"})
 	case <-done:
 		// If done without errors, proceed to execute the template
