@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	port := ":8000"
+	port := ":8080"
 	http.Handle("/static/", http.FileServer(http.Dir(".")))
 	http.HandleFunc("/", handlers.HomePage)
 	http.HandleFunc("/artists/{id}", handlers.ArtistPage)
