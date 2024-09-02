@@ -31,14 +31,9 @@ type (
 		DatesLocations map[string][]string `json:"datesLocations"`
 	}
 	GeoResponse struct {
-		Results []struct {
-			Geometry struct {
-				Location struct {
-					Lat float64 `json:"lat"`
-					Lng float64 `json:"lng"`
-				} `json:"location"`
-			} `json:"geometry"`
-		} `json:"results"`
-		Status string `json:"status"`
+		Location struct {
+			Lat float64 `json:"lat"`
+			Lng float64 `json:"lng"`
+		} `json:"data"`
 	}
 )

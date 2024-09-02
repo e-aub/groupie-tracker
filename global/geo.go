@@ -2,8 +2,9 @@ package global
 
 import (
 	"context"
-	"errors"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"sync"
 )
 
@@ -17,21 +18,44 @@ func GetLocationsId(ctx context.Context, data *ArtistLocation, errChan chan erro
 	case <-ctx.Done():
 		return
 	default:
-		apiKey := "AIzaSyBOypms8DmfMpEx6-IRJzwz7lvBmE4kr94"
 		for _, location := range data.Locations {
-			var res GeoResponse
-			adress := fmt.Sprintf("https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s", location, apiKey)
+			var response GeoResponse
 			geoWg.Add(1)
 			go func(location string) {
 				defer geoWg.Done()
-				FetchGoRoutine(ctx, errChan, adress, &res, &geoWg, "locations")
-				if res.Status != "OK" {
-					errChan <- errors.New(res.Status)
+				select {
+				case <-ctx.Done():
 					return
+				default:
+					url := fmt.Sprintf("https://maps-data.p.rapidapi.com/geocoding.php?query=%s&lang=en&country=fr", location)
+					req, err := http.NewRequest("GET", url, nil)
+					if err != nil {
+						errChan <- err
+						return
+					}
+
+					req.Header.Add("x-rapidapi-key", "3deb8955ecmsh5bfc47a8a9587b3p19cb4ajsn0a1824e4a63c")
+					req.Header.Add("x-rapidapi-host", "maps-data.p.rapidapi.com")
+
+					res, err := http.DefaultClient.Do(req)
+					if res.StatusCode != 200 {
+						errChan <- fmt.Errorf("status not 200 : %d", res.StatusCode)
+						return
+					} else if err != nil {
+						errChan <- err
+						return
+					}
+					defer res.Body.Close()
+
+					err = json.NewDecoder(res.Body).Decode(&response)
+					if err != nil {
+						errChan <- err
+						return
+					}
 				}
 				mutex.Lock()
-				data.LocationsCoordinates[location] = fmt.Sprintf("%g,%g", res.Results[0].Geometry.Location.Lat, res.Results[0].Geometry.Location.Lng)
-				mutex.Unlock()
+				data.LocationsCoordinates[location] = fmt.Sprintf("%g,%g", response.Location.Lat, response.Location.Lng)
+				defer mutex.Unlock()
 			}(location)
 
 		}
